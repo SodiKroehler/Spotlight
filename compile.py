@@ -63,11 +63,12 @@ color_dict = {
     'FFFCE5CD' : 'orange',
     '00000000' : 'blank', 
     'FFCFE2F3'  : 'blue', 
-    'FFD9D2E9' : 'pink',
+    'FFD9D2E9' : 'pink'
 }
 
 if __name__ == "__main__":
-    file_path = 'picso_orig.xlsx'
+    # file_path = 'picso_orig.xlsx'
+    file_path = 'nov5.xlsx'
     combined_df = read_excel_sheets(file_path)
     colors_pd = read_excel_openpxyl(file_path)
 
@@ -76,4 +77,4 @@ if __name__ == "__main__":
     combined_df["bgColor"] = combined_df["message_id"].map(lambda x: map_color(colors_pd[x]["bg"]) if x in colors_pd else "00000000")
 
     # print(combined_df.loc[combined_df["SheetName"] == "9-15-24"])
-    combined_df.to_csv('combined_with_colors.csv', index=False, encoding='utf-8-sig')
+    combined_df.to_csv('./nov5_combined_with_colors.csv', index=False, encoding='utf-8-sig')
