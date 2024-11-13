@@ -13,12 +13,11 @@ def read_excel_sheets(file_path):
     for sheet_name, df in xls.items():
         # Add a new column for the sheet name
         df['SheetName'] = sheet_name
-        # Append the dataframe to the list
+        df['RowNumber'] = df.index + 1
         dataframes.append(df)
     
     # Concatenate all dataframes into one
-    combined_df = pd.concat(dataframes, ignore_index=True)
-    
+    combined_df = pd.concat(dataframes, ignore_index=True)    
     return combined_df
 
 # Usage example
@@ -44,7 +43,8 @@ def read_excel_openpxyl(file_paht):
                 #     continue
                 # else:
                     # print("Background color index of cell (",cell_value, ") is", bgColor)
-                colors[cell_value] = {"sheet": str(fs), "bg": bgColor, "fg" :fgColor}
+                idx = str(fs) + str(row)
+                colors[idx] = {"bg": bgColor, "fg" :fgColor}
                     # print("Background color index of cell (",row,column, ") is", bgColor)
                     # print("Foreground color index of cell (",row,column, ") is", fgColor)
 
@@ -67,14 +67,20 @@ color_dict = {
 }
 
 if __name__ == "__main__":
-    # file_path = 'picso_orig.xlsx'
+    picso_file_path = 'picso_orig.xlsx'
     file_path = 'nov5.xlsx'
     combined_df = read_excel_sheets(file_path)
-    colors_pd = read_excel_openpxyl(file_path)
+    colors_pd = read_excel_openpxyl(picso_file_path)
 
 
+    combined_df['idx'] = "<Worksheet \"" + combined_df['SheetName'] + "\">" +combined_df['RowNumber'].astype(str)
+    # print(combined_df['idx'].head())
+    # print(list(colors_pd.keys())[0:5])
 
-    combined_df["bgColor"] = combined_df["message_id"].map(lambda x: map_color(colors_pd[x]["bg"]) if x in colors_pd else "00000000")
+
+    combined_df["bgColor"] = combined_df["idx"].map(lambda x: map_color(colors_pd[x]["bg"]) if x in colors_pd else "00000000")
+    # combined_df["row_number"] = combined_df["message_id"].map(lambda x: map_color(colors_pd[x]["bg"]) if x in colors_pd else "00000000")
+    combined_df = combined_df.drop(columns=['idx'])
 
     # print(combined_df.loc[combined_df["SheetName"] == "9-15-24"])
     combined_df.to_csv('./nov5_combined_with_colors.csv', index=False, encoding='utf-8-sig')
